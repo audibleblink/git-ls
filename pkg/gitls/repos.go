@@ -34,14 +34,29 @@ func (gls *ghClient) Repos() {
 }
 
 func (gls *ghClient) repos() (all []*repo, err error) {
+	var resp *github.Response
+	var ghRepos []*github.Repository
+
 	ctx := context.Background()
 	opts := &github.RepositoryListOptions{}
-	opts.PerPage = 100
+	opts.PerPage = maxPerPage
 
-	// TODO properly paginate when more that 100 records exist
-	ghRepos, _, err := gls.gh.Repositories.List(ctx, "", opts)
+	ghRepos, resp, err = gls.gh.Repositories.List(ctx, "", opts)
 	if err != nil {
 		return
+	}
+
+	opts.Page = resp.NextPage
+	for resp.NextPage != 0 {
+		rps, resp, err := gls.gh.Repositories.List(ctx, "", opts)
+		if err != nil {
+			return all, err
+		}
+		opts.Page = resp.NextPage
+		ghRepos = append(ghRepos, rps...)
+		if resp.NextPage == 0 {
+			break
+		}
 	}
 
 	for _, r := range ghRepos {
