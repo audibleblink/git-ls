@@ -12,22 +12,23 @@ Run `git-ls` with no arguments to see what data can be listed.
 
 ## Examples
 
-Below are some useful filterings to use with `jq`
-
+Below are some useful filter to use with `jq`
 
 ```bash
 # Just private gists
 ❯❯ git-ls gists | jq '.[] | select(.Private == true)'
 
-
 # Just repo names
-❯❯ git-ls repos | jq '.[].Name'
+❯❯ git-ls repos | jq -r '.[].Name'
 
+# Repos that don't belong to the GITHUB_TOKEN owner
+❯❯ git-ls repos | jq '.[] | select(.Owner != "audibleblink")'
 ```
 
 ## Properties
 
 I tried to select the most useful properties returned by the GitHub API to keep noise low.
+These are the properties that you can filter on with `jq`
 
 ### Gists
 
