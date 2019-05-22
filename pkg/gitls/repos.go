@@ -34,30 +34,8 @@ func (gls *ghClient) Repos() {
 }
 
 func (gls *ghClient) repos() (all []*repo, err error) {
-	var resp *github.Response
 	var ghRepos []*github.Repository
-
-	ctx := context.Background()
-	opts := &github.RepositoryListOptions{}
-	opts.PerPage = maxPerPage
-
-	ghRepos, resp, err = gls.gh.Repositories.List(ctx, "", opts)
-	if err != nil {
-		return
-	}
-
-	opts.Page = resp.NextPage
-	for resp.NextPage != 0 {
-		rps, resp, err := gls.gh.Repositories.List(ctx, "", opts)
-		if err != nil {
-			return all, err
-		}
-		opts.Page = resp.NextPage
-		ghRepos = append(ghRepos, rps...)
-		if resp.NextPage == 0 {
-			break
-		}
-	}
+	ghRepos = gls.repoPager(ghRepos, firstPage)
 
 	for _, r := range ghRepos {
 		re := &repo{
@@ -72,4 +50,22 @@ func (gls *ghClient) repos() (all []*repo, err error) {
 		all = append(all, re)
 	}
 	return
+}
+
+func (gls *ghClient) repoPager(data []*github.Repository, page int) []*github.Repository {
+	if page == lastPage {
+		return data
+	}
+
+	ctx := context.Background()
+	opts := &github.RepositoryListOptions{}
+	opts.PerPage = maxPerPage
+	opts.Page = page
+
+	repos, response, err := gls.gh.Repositories.List(ctx, "", opts)
+	if err != nil {
+		return data
+	}
+	data = append(data, repos...)
+	return gls.repoPager(data, response.NextPage)
 }

@@ -7,7 +7,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const maxPerPage = 100
+const (
+	firstPage  = 1
+	lastPage   = 0
+	maxPerPage = 100
+)
 
 type ghClient struct {
 	gh *github.Client

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/google/go-github/v25/github"
 )
@@ -32,30 +33,8 @@ func (gls *ghClient) Gists() {
 }
 
 func (gls *ghClient) gists() (all []*gist, err error) {
-	var resp *github.Response
 	var ghGists []*github.Gist
-
-	ctx := context.Background()
-	opts := &github.GistListOptions{}
-	opts.PerPage = maxPerPage
-
-	ghGists, resp, err = gls.gh.Gists.List(ctx, "", opts)
-	if err != nil {
-		return
-	}
-
-	opts.Page = resp.NextPage
-	for resp.NextPage != 0 {
-		rps, resp, err := gls.gh.Gists.List(ctx, "", opts)
-		if err != nil {
-			return all, err
-		}
-		opts.Page = resp.NextPage
-		ghGists = append(ghGists, rps...)
-		if resp.NextPage == 0 {
-			break
-		}
-	}
+	ghGists = gls.gistPager(ghGists, firstPage)
 
 	for _, g := range ghGists {
 		var filenames []github.GistFilename
@@ -72,4 +51,22 @@ func (gls *ghClient) gists() (all []*gist, err error) {
 		all = append(all, gst)
 	}
 	return
+}
+
+func (gls *ghClient) gistPager(data []*github.Gist, page int) []*github.Gist {
+	if page == lastPage {
+		return data
+	}
+
+	ctx := context.Background()
+	opts := &github.GistListOptions{}
+	opts.PerPage = maxPerPage
+	opts.Page = page
+
+	gists, response, err := gls.gh.Gists.List(ctx, "", opts)
+	if err != nil {
+		return data
+	}
+	data = append(data, gists...)
+	return gls.gistPager(data, response.NextPage)
 }
