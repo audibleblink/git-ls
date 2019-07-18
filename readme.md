@@ -12,7 +12,7 @@ Run `git-ls` with no arguments to see what data can be listed.
 
 ## Examples
 
-Below are some useful filter to use with `jq`
+Below are some useful filters to use with `jq`, the CLI json parser.
 
 ```bash
 # Just private gists
