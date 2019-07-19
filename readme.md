@@ -56,3 +56,9 @@ it can be placed into an HTTP clone request.
 ```bash
 git clone https://${GITHUB_TOKEN}@github.com/someOrg/someRepo
 ```
+
+If you just want all the secret repos the token has access to
+
+```bash
+git-ls plunder
+```
