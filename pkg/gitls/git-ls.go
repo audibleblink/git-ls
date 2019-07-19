@@ -14,12 +14,15 @@ const (
 )
 
 type ghClient struct {
-	gh *github.Client
+	gh    *github.Client
+	Token string
 }
 
 // NewClient returns a GitHub client for the application to use
 func NewClient(apiKey string) (client *ghClient) {
-	client = &ghClient{}
+	client = &ghClient{
+		Token: apiKey,
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(

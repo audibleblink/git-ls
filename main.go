@@ -23,14 +23,17 @@ func main() {
 		cli.Gists()
 	case "user":
 		cli.User()
+	case "plunder":
+		cli.Plunder()
 	default:
 		fmt.Println("Not Implemented")
+		usage()
 	}
 }
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `
-Usage: git-ls <repos | gists | user >
+Usage: git-ls <repos | gists | user | plunder>
 
 <user>
 	Inspect properties of the token owner
@@ -38,5 +41,6 @@ Usage: git-ls <repos | gists | user >
 	See all gists, public and private, to which this token owner has access
 <repos>
 	See all repos, public and private, to which this token owner has access
-	`)
+<plunder>
+	Clones all private repos the token can access with wreckless abandon`)
 }
