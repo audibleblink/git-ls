@@ -62,4 +62,5 @@ If you just want all the secret repos the token has access to
 ```bash
 git-ls plunder
 ```
-![](https://i.imgur.com/dayWnXq.png)
+![](https://i.imgur.com/lcn6Wop.png)
+![](https://i.imgur.com/s587JPU.png)
