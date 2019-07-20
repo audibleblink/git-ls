@@ -25,6 +25,14 @@ type user struct {
 	TwoFactorAuthentication bool
 }
 
+func (gls *ghClient) TokenOwner() string {
+	usr, err := gls.user()
+	if err != nil {
+		return "Unknown User"
+	}
+	return usr.Login
+}
+
 func (gls *ghClient) User() {
 	usr, err := gls.user()
 	if err != nil {
