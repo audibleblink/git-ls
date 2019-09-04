@@ -19,6 +19,8 @@ func main() {
 	switch os.Args[1] {
 	case "repos":
 		cli.Repos()
+	case "collabs":
+		cli.Collabs()
 	case "gists":
 		cli.Gists()
 	case "user":
@@ -33,7 +35,7 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `
-Usage: git-ls <repos | gists | user | plunder>
+Usage: git-ls <repos | collabs | gists | user | plunder>
 
 <user>
 	Inspect properties of the token owner
@@ -41,6 +43,8 @@ Usage: git-ls <repos | gists | user | plunder>
 	See all gists, public and private, to which this token owner has access
 <repos>
 	See all repos, public and private, to which this token owner has access
+<collabs>
+	See other users' repos, public and private, to which this token owner has access
 <plunder>
 	Clones all private repos the token can access with wreckless abandon`)
 }
