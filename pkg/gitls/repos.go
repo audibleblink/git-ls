@@ -29,6 +29,28 @@ func (r *repo) CloneableURL(token string) (cloneURL string) {
 	return
 }
 
+func (gls *ghClient) Collabs() {
+	allRepos, err := gls.repos()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tokenOwner := gls.TokenOwner()
+	var filteredRepos []*repo
+	for _, r := range allRepos {
+		if r.Owner != tokenOwner {
+			filteredRepos = append(filteredRepos, r)
+		}
+	}
+
+	out, err := json.MarshalIndent(filteredRepos, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(out))
+}
+
 func (gls *ghClient) Repos() {
 	allRepos, err := gls.repos()
 	if err != nil {
