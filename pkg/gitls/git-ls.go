@@ -2,6 +2,7 @@ package gitls
 
 import (
 	"context"
+	"net/url"
 
 	"github.com/google/go-github/v25/github"
 	"golang.org/x/oauth2"
@@ -30,5 +31,13 @@ func NewClient(apiKey string) (client *ghClient) {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	client.gh = github.NewClient(tc)
+	return
+}
+
+// NewEnterpriseClient returns a client with a custom github API base URL
+func NewEnterpriseClient(baseURL, apiKey string) (client *ghClient) {
+	client = NewClient(apiKey)
+	base, _ := url.Parse(baseURL)
+	client.gh.BaseURL = base
 	return
 }

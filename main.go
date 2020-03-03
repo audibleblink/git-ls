@@ -11,6 +11,11 @@ func main() {
 	token := os.Getenv("GITHUB_TOKEN")
 	cli := gitls.NewClient(token)
 
+	baseURL := os.Getenv("GITHUB_API_BASE_URL")
+	if baseURL != "" {
+		cli = gitls.NewEnterpriseClient(baseURL, token)
+	}
+
 	if len(os.Args) <= 1 {
 		usage()
 		os.Exit(0)
@@ -30,6 +35,7 @@ func main() {
 	default:
 		fmt.Println("Not Implemented")
 		usage()
+		os.Exit(1)
 	}
 }
 
