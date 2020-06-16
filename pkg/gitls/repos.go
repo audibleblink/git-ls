@@ -7,7 +7,7 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/google/go-github/v25/github"
+	"github.com/google/go-github/v32/github"
 )
 
 type repo struct {

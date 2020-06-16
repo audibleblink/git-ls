@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	// "github.com/google/go-github/v25/github"
 )
 
 type user struct {
