@@ -8,16 +8,14 @@ name: Build and Release
 jobs:
 
   release:
+    name: 'Create Release from Tag'
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
 
       - name: Checkout
         uses: actions/checkout@master
-
-      - name: Build
-        uses: audibleblink/golang-action@1.5.3
-        with:
-          args: make -j3
 
       - name: Get the version
         id: get_version
@@ -34,32 +32,30 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Linux Release Asset
+  build:
+    name: 'Build and Upload Release Binary'
+    runs-on: ubuntu-latest
+    needs: release
+    strategy:
+      matrix:
+        OSes: ['windows', 'darwin', 'linux']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Build ${{ matrix.OSes }}
+        uses: audibleblink/golang-action@1.5.3
+        with:
+          args: make ${{ matrix.OSes }}
+
+      - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./gitls_linux
-          asset_name: gitls_linux.bin
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./gitls_${{ matrix.OSes }}
+          asset_name: gitls_${{ matrix.OSes }}
           asset_content_type: application/octet-stream
 
-      - name: Upload MacOS Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./gitls_darwin
-          asset_name: gitls_macos
-          asset_content_type: application/octet-stream
-
-      - name: Upload Windows Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./gitls_windows
-          asset_name: gitls_windows.exe
-          asset_content_type: application/octet-stream
