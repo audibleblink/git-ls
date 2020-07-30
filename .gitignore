@@ -1,3 +1,4 @@
 .env
 git-ls
 data/*
+gitls_*
