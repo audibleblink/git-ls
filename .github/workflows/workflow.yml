@@ -39,23 +39,31 @@ jobs:
     strategy:
       matrix:
         OSes: ['windows', 'darwin', 'linux']
+        arch: ['amd64', '386']
 
     steps:
-      - name: Checkout
+      - name: 'Checkout'
         uses: actions/checkout@master
 
-      - name: Build ${{ matrix.OSes }}
-        uses: audibleblink/golang-action@1.5.3
+      - name: 'Setup Golang Environment'
+        uses: actions/setup-go@v2
         with:
-          args: make ${{ matrix.OSes }}
+          go-version: '^1.14'
 
-      - name: Upload Release Assets
+      - name: 'Build ${{ matrix.OSes }}-${{ matrix.arch }}'
+        run: |
+          GOOS=${{ matrix.OSes }} \
+          GOARCH=${{ matrix.arch }} \
+          go build -trimpath -ldflags="-s -w -buildid=" \
+            -o gitls_${{ matrix.OSes }}_${{ matrix.arch }}
+
+      - name: 'Upload Release Assets'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./gitls_${{ matrix.OSes }}
-          asset_name: gitls_${{ matrix.OSes }}
+          asset_path: ./gitls_${{ matrix.OSes }}_${{ matrix.arch }}
+          asset_name: gitls_${{ matrix.OSes }}_${{ matrix.arch }}
           asset_content_type: application/octet-stream
 
