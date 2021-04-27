@@ -64,5 +64,12 @@ If you just want all the secret repos the token has access to
 ```bash
 git-ls plunder
 ```
+To export all repos, regardless of them being private or public:
+
+```bash
+git-ls export
+```
+
 ![](https://i.imgur.com/lcn6Wop.png)
+
 ![](https://i.imgur.com/s587JPU.png)
