@@ -30,8 +30,12 @@ func main() {
 		cli.Gists()
 	case "user":
 		cli.User()
+	case "export":
+		privateOnly := false
+		cli.Plunder(privateOnly)
 	case "plunder":
-		cli.Plunder()
+		privateOnly := true
+		cli.Plunder(privateOnly)
 	default:
 		fmt.Println("Not Implemented")
 		usage()
@@ -41,16 +45,12 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `
-Usage: git-ls <repos | collabs | gists | user | plunder>
+Usage: git-ls <sub-cmd>
 
-<user>
-	Inspect properties of the token owner
-<gists>
-	See all gists, public and private, to which this token owner has access
-<repos>
-	See all repos, public and private, to which this token owner has access
-<collabs>
-	See other users' repos, public and private, to which this token owner has access
-<plunder>
-	Clones all private repos the token can access with wreckless abandon`)
+<user>		Inspect properties of the token owner
+<gists>		See all gists, public and private, to which this token owner has access
+<repos>		See all repos, public and private, to which this token owner has access
+<collabs>	See other users' repos, public and private, to which this token owner has access
+<export>	Clone all repos, public and private (check your HD size first!)
+<plunder>	Clones all private repos the token can access with wreckless abandon`)
 }
