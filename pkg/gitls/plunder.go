@@ -13,7 +13,7 @@ import (
 
 // Plunder will find all private repositories from a given token and clone them
 // into a given folder.
-func (gls *ghClient) Plunder() {
+func (gls *ghClient) Plunder(privateOnly bool) {
 	owner := gls.TokenOwner()
 	charSet := spinner.CharSets[14]
 	spnTime := 100 * time.Millisecond
@@ -30,23 +30,27 @@ func (gls *ghClient) Plunder() {
 	}
 	spin.Stop()
 
-	var privateRepos []*repo
-	for _, repo := range allRepos {
-		if repo.Private {
-			fmt.Printf("%s/%s\n", repo.Owner, repo.Name)
-			privateRepos = append(privateRepos, repo)
+	var reposToClone []*repo
+	if privateOnly {
+		for _, repo := range allRepos {
+			if repo.Private {
+				fmt.Printf("%s/%s\n", repo.Owner, repo.Name)
+				reposToClone = append(reposToClone, repo)
+			}
 		}
+	} else {
+		reposToClone = allRepos[:]
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(len(privateRepos))
+	wg.Add(len(reposToClone))
 
-	final = stats(owner, privateRepos)
+	final = stats(owner, reposToClone)
 	spin = spinner.New(charSet, spnTime, setOpts("Cloning repos", final))
 	defer spin.Stop()
 	spin.Start()
 
-	for _, repo := range privateRepos {
+	for _, repo := range reposToClone {
 
 		cloneURL := repo.CloneableURL(gls.Token)
 		path := fmt.Sprintf("%s/%s", repo.Owner, repo.Name)
